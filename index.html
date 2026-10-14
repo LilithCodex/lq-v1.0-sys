@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#F5F2EB" />
+    <title>LIFEQUEST // SYS_V1.0</title>
+    <link rel="manifest" href="manifest.json" />
+    <style>
+      :root {
+        --bone-bg: #f5f2eb;
+        --bone-card: #eae5db;
+        --bone-inset: #dfd9cd;
+        --ink: #2b261e;
+        --ink-muted: #6e6659;
+        --lcd-green-bg: #cbd5c0;
+        --lcd-green-text: #1e2d1a;
+        --amber-bg: #e6d2aa;
+        --amber-text: #4a3510;
+        --dock-dark: #231f1a;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+
+      body {
+        background-color: var(--bone-bg);
+        color: var(--ink);
+        font-family: "Courier New", Courier, monospace;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 14px 14px 96px 14px;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      /* TOP RETRO MODULE HEADER */
+      .sys-shell {
+        background: var(--bone-card);
+        border: 2px solid var(--ink);
+        border-radius: 14px;
+        padding: 10px 12px;
+        box-shadow:
+          0 3px 0 var(--ink),
+          inset 0 1px 0 #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .sys-title-pill {
+        background: var(--bone-bg);
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 0 rgba(43, 38, 30, 0.25);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .easy-tag {
+        font-size: 0.68rem;
+        background: var(--amber-bg);
+        color: var(--amber-text);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--ink);
+        display: none;
+      }
+      .easy-tag.active {
+        display: inline-block;
+      }
+
+      .hud-grid {
+        display: grid;
+        grid-template-columns: 74px 1fr;
+        gap: 12px;
+        align-items: center;
+      }
+
+      /* LCD LEVEL BOX */
+      .lcd-box {
+        background: var(--lcd-green-bg);
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        padding: 6px 4px;
+        text-align: center;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
+      }
+
+      .lcd-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: var(--lcd-green-text);
+        letter-spacing: 1px;
+      }
+
+      .lcd-num {
+        font-size: 1.9rem;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--lcd-green-text);
+        margin-top: 2px;
+      }
+
+      /* XP SEGMENTS & STREAK ROW */
+      .xp-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .xp-title {
+        font-weight: 900;
+        font-size: 0.9rem;
+      }
+
+      .xp-segments {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 3px;
+        flex: 1;
+      }
+
+      .seg {
+        height: 16px;
+        border: 1.5px solid var(--ink);
+        background: var(--bone-bg);
+      }
+
+      .seg.filled {
+        background: var(--ink);
+      }
+
+      .streak-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px dashed var(--ink-muted);
+        padding-top: 6px;
+        font-size: 0.76rem;
+        font-weight: 800;
+      }
+
+      /* TACTILE EASY-MODE SWITCH */
+      .retro-switch {
+        width: 44px;
+        height: 22px;
+        background: var(--bone-inset);
+        border: 1.5px solid var(--ink);
+        border-radius: 999px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .retro-switch.on {
+        background: var(--lcd-green-bg);
+      }
+
+      .switch-knob {
+        width: 16px;
+        height: 16px;
+        background: var(--bone-bg);
+        border: 1.5px solid var(--ink);
+        border-radius: 50%;
+        position: absolute;
+        top: 1.5px;
+        left: 2px;
+        transition: transform 0.2s;
+      }
+
+      .retro-switch.on .switch-knob {
+        transform: translateX(21px);
+        background: var(--ink);
+      }
+
+      /* FOLDER TABS */
+      .tabs-bar {
+        display: flex;
+        gap: 4px;
+        border-bottom: 2px solid var(--ink);
+        margin-bottom: 14px;
+      }
+
+      .tab-btn {
+        flex: 1;
+        background: var(--bone-inset);
+        border: 2px solid var(--ink);
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 4px;
+        font-family: inherit;
+        font-size: 0.74rem;
+        font-weight: 900;
+        color: var(--ink-muted);
+        cursor: pointer;
+      }
+
+      .tab-btn.active {
+        background: var(--bone-bg);
+        color: var(--ink);
+        transform: translateY(2px);
+        padding-bottom: 10px;
+      }
+
+      .section-heading {
+        font-size: 1rem;
+        font-weight: 900;
+        letter-spacing: 0.8px;
+        margin-bottom: 12px;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* DOUBLE-BORDER TACTILE QUEST CARDS */
+      .quest-card {
+        background: var(--bone-card);
+        border: 2px solid var(--ink);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow:
+          0 3px 0 var(--ink),
+          inset 0 0 0 2px var(--bone-bg);
+        cursor: pointer;
+        transition: transform 0.08s;
+      }
+
+      .quest-card:active {
+        transform: translateY(2px);
+        box-shadow:
+          0 1px 0 var(--ink),
+          inset 0 0 0 2px var(--bone-bg);
+      }
+
+      .quest-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .quest-pillar {
+        font-size: 0.95rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+      }
+
+      .quest-sub {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        font-weight: 700;
+      }
+
+      .xp-pill {
+        font-size: 0.75rem;
+        font-weight: 900;
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1.5px solid var(--ink);
+      }
+
+      .xp-green {
+        background: var(--lcd-green-bg);
+        color: var(--lcd-green-text);
+      }
+      .xp-amber {
+        background: var(--amber-bg);
+        color: var(--amber-text);
+      }
+
+      .quest-Action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+
+      .check-box {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        background: var(--bone-bg);
+        border: 2px solid var(--ink);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1rem;
+      }
+
+      .quest-card.done .quest-text {
+        text-decoration: line-through;
+        color: var(--ink-muted);
+      }
+
+      /* ADD QUEST INPUT */
+      .add-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .retro-input {
+        flex: 1;
+        background: var(--bone-bg);
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: var(--ink);
+      }
+
+      .retro-btn {
+        background: var(--ink);
+        color: var(--bone-bg);
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: inherit;
+        font-weight: 900;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      /* STATS & FOCUS BARS */
+      .stat-row {
+        margin-bottom: 10px;
+      }
+      .stat-head {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 900;
+        margin-bottom: 4px;
+      }
+      .stat-bar {
+        height: 14px;
+        background: var(--bone-bg);
+        border: 2px solid var(--ink);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .stat-fill {
+        height: 100%;
+        background: var(--ink);
+        transition: width 0.3s;
+      }
+
+      .timer-lcd {
+        background: var(--lcd-green-bg);
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        padding: 16px;
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .timer-digits {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: var(--lcd-green-text);
+        letter-spacing: 2px;
+      }
+      .timer-controls {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      /* BOTTOM ANALOG AUDIO DOCK */
+      .bottom-dock {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 480px;
+        margin: 0 auto;
+        background: var(--dock-dark);
+        color: var(--bone-bg);
+        padding: 8px 14px 12px 14px;
+        border-top: 3px solid var(--ink);
+        z-index: 50;
+      }
+
+      .dock-label {
+        font-size: 0.62rem;
+        letter-spacing: 1.2px;
+        color: #b5afa4;
+        margin-bottom: 4px;
+        font-weight: 700;
+      }
+
+      .dock-bar {
+        background: var(--bone-card);
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        padding: 6px 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hw-btn {
+        width: 34px;
+        height: 32px;
+        border: 2px solid var(--ink);
+        border-radius: 6px;
+        background: var(--bone-bg);
+        font-weight: 900;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hw-btn.play {
+        background: var(--lcd-green-bg);
+      }
+
+      .track-window {
+        flex: 1;
+        background: var(--bone-bg);
+        border: 1.5px solid var(--ink);
+        border-radius: 6px;
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .track-name {
+        font-weight: 900;
+        font-size: 0.82rem;
+      }
+
+      .analog-viz {
+        font-size: 0.65rem;
+        font-weight: 900;
+        text-align: right;
+        line-height: 1;
+      }
+
+      .medal-btn {
+        width: 34px;
+        height: 32px;
+        background: var(--amber-bg);
+        border: 2px solid var(--ink);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* BADGE TOAST POPUP */
+      .toast {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: var(--bone-bg);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 900;
+        z-index: 100;
+        display: none;
+        border: 2px solid var(--amber-bg);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="toast" class="toast">ACHIEVEMENT UNLOCKED!</div>
+
+    <!-- TOP RETRO SYSTEM HEADER -->
+    <header class="sys-shell">
+      <div class="sys-title-pill">
+        <span>LIFEQUEST // SYS_V1.0</span>
+        <span id="easyBadge" class="easy-tag">5M EASY MODE</span>
+      </div>
+      <div class="hud-grid">
+        <div class="lcd-box">
+          <div class="lcd-label">LVL</div>
+          <div id="lvlDisplay" class="lcd-num">03</div>
+        </div>
+        <div>
+          <div class="xp-row">
+            <span class="xp-title">XP</span>
+            <div id="xpSegments" class="xp-segments"></div>
+          </div>
+          <div class="streak-row">
+            <span>STREAK [ ||| <span id="streakNum">3</span> DAYS ]</span>
+            <div
+              id="easySwitch"
+              class="retro-switch"
+              title="Toggle 5-Min Easy Mode"
+              onclick="toggleEasyMode()"
+            >
+              <div class="switch-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- RETRO FOLDER TABS -->
+    <nav class="tabs-bar">
+      <button class="tab-btn active" onclick="switchTab('quests', this)">
+        [ 01_QUESTS ]
+      </button>
+      <button class="tab-btn" onclick="switchTab('stats', this)">
+        [ 02_STATS ]
+      </button>
+      <button class="tab-btn" onclick="switchTab('focus', this)">
+        [ 03_FOCUS ]
+      </button>
+    </nav>
+
+    <!-- TAB 01: DAILY MICRO QUESTS -->
+    <main id="tab-quests" class="tab-panel active">
+      <div class="section-heading">DAILY_MICRO_QUESTS</div>
+      <div id="questContainer"></div>
+
+      <div class="add-row">
+        <input
+          id="newQuestInput"
+          class="retro-input"
+          type="text"
+          placeholder="Add custom micro-quest..."
+        />
+        <button class="retro-btn" onclick="addCustomQuest()">+ ADD</button>
+      </div>
+    </main>
+
+    <!-- TAB 02: CHARACTER STATS & BADGES -->
+    <section id="tab-stats" class="tab-panel">
+      <div class="section-heading">ATTRIBUTE_MATRIX</div>
+      <div class="quest-card">
+        <div class="stat-row">
+          <div class="stat-head">
+            <span>VITALITY (Home Energy)</span><span id="stat-vit">40%</span>
+          </div>
+          <div class="stat-bar">
+            <div id="bar-vit" class="stat-fill" style="width: 40%"></div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-head">
+            <span>INTELLECT (Master's Prep)</span><span id="stat-int">55%</span>
+          </div>
+          <div class="stat-bar">
+            <div id="bar-int" class="stat-fill" style="width: 55%"></div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-head">
+            <span>CRAFT (UX / Portfolio)</span><span id="stat-crf">70%</span>
+          </div>
+          <div class="stat-bar">
+            <div id="bar-crf" class="stat-fill" style="width: 70%"></div>
+          </div>
+        </div>
+        <div class="stat-row" style="margin-bottom: 0">
+          <div class="stat-head">
+            <span>MORALE (Solo Recharge)</span><span id="stat-mor">80%</span>
+          </div>
+          <div class="stat-bar">
+            <div id="bar-mor" class="stat-fill" style="width: 80%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-heading" style="margin-top: 16px">
+        RETRO_BADGE_VALUT
+      </div>
+      <div
+        class="quest-card"
+        onclick="showToast('🏆 RUNNER 5: Morning Anchor Streak!')"
+      >
+        <div class="quest-top">
+          <div>
+            <div class="quest-pillar">ABEL TOWNSHIP RUNNER</div>
+            <div class="quest-sub">Complete Morning Anchor 3 days in a row</div>
+          </div>
+          <span class="xp-pill xp-green">UNLOCKED</span>
+        </div>
+      </div>
+      <div
+        class="quest-card"
+        onclick="showToast('🏅 SCHOLAR: Psychology Mind-Mapper!')"
+      >
+        <div class="quest-top">
+          <div>
+            <div class="quest-pillar">PSYCHOLOGY ARCHITECT</div>
+            <div class="quest-sub">Finish 5 Master's Prep study blocks</div>
+          </div>
+          <span class="xp-pill xp-amber">IN PROGRESS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 03: FOCUS TIMER & PLAYLIST -->
+    <section id="tab-focus" class="tab-panel">
+      <div class="section-heading">CHRONO_TIMER // DECK</div>
+      <div class="timer-lcd">
+        <div id="timerDisplay" class="timer-digits">15:00</div>
+        <div class="timer-controls">
+          <button class="retro-btn" onclick="setTimer(5)">5M EASY</button>
+          <button class="retro-btn" onclick="setTimer(15)">15M QUEST</button>
+          <button class="retro-btn" onclick="setTimer(25)">25M DEEP</button>
+          <button class="retro-btn" onclick="toggleTimer()" id="startTimerBtn">
+            START
+          </button>
+        </div>
+      </div>
+
+      <div class="section-heading">CURATED_OST_MODES</div>
+      <div class="quest-card" onclick="selectPreset(0)">
+        <div class="quest-pillar">
+          01 // COZY LO-FI (Secunda / Oblivion Vibe)
+        </div>
+        <div class="quest-sub">
+          Warm analog chord drone for Psychology reading
+        </div>
+      </div>
+      <div class="quest-card" onclick="selectPreset(1)">
+        <div class="quest-pillar">02 // RUNNER PULSE (Abel Township Tempo)</div>
+        <div class="quest-sub">Rhythmic synth pulse for indoor movement</div>
+      </div>
+      <div class="quest-card" onclick="selectPreset(2)">
+        <div class="quest-pillar">03 // NIGHTFALL SYNTH (Retro Recharge)</div>
+        <div class="quest-sub">
+          Deep 16-bit dark ambient pad for evening wind-down
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM ANALOG SYNTH DOCK -->
+    <footer class="bottom-dock">
+      <div class="dock-label">PLAY // STOP</div>
+      <div class="dock-bar">
+        <button
+          class="hw-btn play"
+          onclick="playAnalogSynth()"
+          title="Play Analog Synth"
+        >
+          ▶
+        </button>
+        <button class="hw-btn" onclick="stopAnalogSynth()" title="Stop Audio">
+          ■
+        </button>
+        <div class="track-window" onclick="cyclePreset()">
+          <span id="presetLabel" class="track-name">COZY LO-FI</span>
+          <div class="analog-viz">..|..<br />ANALOG</div>
+        </div>
+        <button
+          class="medal-btn"
+          onclick="showToast('⚡ TOTAL XP: ' + state.xp + ' // KEEP GOING!')"
+          title="Inspect Rank"
+        >
+          🏅
+        </button>
+      </div>
+    </footer>
+
+    <script>
+      const defaultQuests = [
+        {
+          id: "q1",
+          title: "MORNING ANCHOR",
+          sub: "Energy & Routine",
+          normalText: "Make coffee + 10 mins indoor movement",
+          easyText: "Make coffee + 2 mins gentle stretching",
+          xp: 10,
+          pillClass: "xp-green",
+          stat: "vit",
+          done: false,
+        },
+        {
+          id: "q2",
+          title: "MID-DAY FOCUS",
+          sub: "Master's Prep",
+          normalText: "Read 1 Psych chapter or review flashcards",
+          easyText: "Review 5 Psychology flashcards visually",
+          xp: 25,
+          pillClass: "xp-amber",
+          stat: "int",
+          done: false,
+        },
+        {
+          id: "q3",
+          title: "AFTERNOON BUILD",
+          sub: "Career Launch",
+          normalText: "Update 1 portfolio piece",
+          easyText: "Write 3 bullet points for UX portfolio",
+          xp: 50,
+          pillClass: "xp-amber",
+          stat: "crf",
+          done: true,
+        },
+        {
+          id: "q4",
+          title: "EVENING REWARD",
+          sub: "Guilt-Free Recharge",
+          normalText: "1+ hr solo gaming / RetroAchievements hunting",
+          easyText: "30 mins guilt-free solo gaming & rest",
+          xp: 15,
+          pillClass: "xp-green",
+          stat: "mor",
+          done: false,
+        },
+      ];
+
+      let state = JSON.parse(localStorage.getItem("lifequest_bone_v1")) || {
+        lvl: 3,
+        xp: 60,
+        streak: 3,
+        easyMode: false,
+        quests: defaultQuests,
+        stats: { vit: 40, int: 55, crf: 70, mor: 80 },
+      };
+
+      function saveState() {
+        localStorage.setItem("lifequest_bone_v1", JSON.stringify(state));
+      }
+
+      // MECHANICAL TACTILE CLICK SOUND
+      let audioCtx = null;
+      function playClick(freq = 180) {
+        try {
+          if (!audioCtx)
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + 0.045,
+          );
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } catch (e) {}
+      }
+
+      function renderHUD() {
+        document.getElementById("lvlDisplay").textContent = String(
+          state.lvl,
+        ).padStart(2, "0");
+        document.getElementById("streakNum").textContent = state.streak;
+
+        const segContainer = document.getElementById("xpSegments");
+        segContainer.innerHTML = "";
+        const filledCount = Math.min(10, Math.floor((state.xp % 100) / 10));
+        for (let i = 0; i < 10; i++) {
+          const div = document.createElement("div");
+          div.className = "seg" + (i < filledCount ? " filled" : "");
+          segContainer.appendChild(div);
+        }
+
+        const sw = document.getElementById("easySwitch");
+        const badge = document.getElementById("easyBadge");
+        if (state.easyMode) {
+          sw.classList.add("on");
+          badge.classList.add("active");
+        } else {
+          sw.classList.remove("on");
+          badge.classList.remove("active");
+        }
+
+        ["vit", "int", "crf", "mor"].forEach((k) => {
+          const val = Math.min(100, state.stats[k] || 50);
+          const labelEl = document.getElementById("stat-" + k);
+          const barEl = document.getElementById("bar-" + k);
+          if (labelEl && barEl) {
+            labelEl.textContent = val + "%";
+            barEl.style.width = val + "%";
+          }
+        });
+      }
+
+      function renderQuests() {
+        const container = document.getElementById("questContainer");
+        container.innerHTML = "";
+        state.quests.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "quest-card" + (q.done ? " done" : "");
+          card.onclick = () => toggleQuest(idx);
+          const taskLabel = state.easyMode ? q.easyText : q.normalText;
+          card.innerHTML = `
+          <div class="quest-top">
+            <div>
+              <div class="quest-pillar">${q.title}</div>
+              <div class="quest-sub">${q.sub}</div>
+            </div>
+            <span class="xp-pill ${q.pillClass}">+${q.xp} XP</span>
+          </div>
+          <div class="quest-Action">
+            <div class="check-box">${q.done ? "X" : ""}</div>
+            <div class="quest-text">${taskLabel}</div>
+          </div>
+        `;
+          container.appendChild(card);
+        });
+      }
+
+      function toggleQuest(idx) {
+        const q = state.quests[idx];
+        q.done = !q.done;
+        if (q.done) {
+          playClick(320);
+          state.xp += q.xp;
+          if (q.stat && state.stats[q.stat] !== undefined) {
+            state.stats[q.stat] = Math.min(100, state.stats[q.stat] + 5);
+          }
+          const newLvl = 3 + Math.floor(state.xp / 100);
+          if (newLvl > state.lvl) {
+            state.lvl = newLvl;
+            showToast(
+              "🎉 LEVEL UP! REACHED LVL " + String(state.lvl).padStart(2, "0"),
+            );
+          }
+        } else {
+          playClick(140);
+          state.xp = Math.max(0, state.xp - q.xp);
+        }
+        saveState();
+        renderHUD();
+        renderQuests();
+      }
+
+      function toggleEasyMode() {
+        playClick(240);
+        state.easyMode = !state.easyMode;
+        saveState();
+        renderHUD();
+        renderQuests();
+        showToast(
+          state.easyMode
+            ? "EASY MODE: Quests scaled to 5 mins"
+            : "STANDARD MODE RESTORED",
+        );
+      }
+
+      function addCustomQuest() {
+        const input = document.getElementById("newQuestInput");
+        const val = input.value.trim();
+        if (!val) return;
+        playClick(280);
+        state.quests.push({
+          id: "q" + Date.now(),
+          title: "CUSTOM MICRO-QUEST",
+          sub: "Personal Goal",
+          normalText: val,
+          easyText: val + " (5 mins)",
+          xp: 20,
+          pillClass: "xp-green",
+          stat: "crf",
+          done: false,
+        });
+        input.value = "";
+        saveState();
+        renderQuests();
+      }
+
+      function switchTab(tabId, btn) {
+        playClick(220);
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + tabId).classList.add("active");
+        btn.classList.add("active");
+      }
+
+      // FOCUS TIMER
+      let timerSeconds = 900;
+      let timerInterval = null;
+      function setTimer(mins) {
+        playClick(250);
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerSeconds = mins * 60;
+        document.getElementById("startTimerBtn").textContent = "START";
+        updateTimerUI();
+      }
+      function updateTimerUI() {
+        const m = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
+        const s = String(timerSeconds % 60).padStart(2, "0");
+        document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+      }
+      function toggleTimer() {
+        playClick(300);
+        const btn = document.getElementById("startTimerBtn");
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          btn.textContent = "START";
+        } else {
+          btn.textContent = "PAUSE";
+          timerInterval = setInterval(() => {
+            if (timerSeconds > 0) {
+              timerSeconds--;
+              updateTimerUI();
+            } else {
+              clearInterval(timerInterval);
+              timerInterval = null;
+              btn.textContent = "START";
+              state.xp += 25;
+              saveState();
+              renderHUD();
+              showToast("⏱️ FOCUS COMPLETE! +25 XP");
+            }
+          }, 1000);
+        }
+      }
+
+      // BUILT-IN WEB AUDIO ANALOG LO-FI SYNTHESIZER
+      const presets = [
+        { name: "COZY LO-FI", freqs: [220, 277.18, 329.63] },
+        { name: "RUNNER PULSE", freqs: [146.83, 220, 293.66] },
+        { name: "NIGHTFALL SYNTH", freqs: [130.81, 196.0, 246.94] },
+      ];
+      let currentPreset = 0;
+      let synthNodes = [];
+
+      function cyclePreset() {
+        currentPreset = (currentPreset + 1) % presets.length;
+        document.getElementById("presetLabel").textContent =
+          presets[currentPreset].name;
+        if (synthNodes.length > 0) playAnalogSynth();
+        else playClick(200);
+      }
+
+      function selectPreset(idx) {
+        currentPreset = idx;
+        document.getElementById("presetLabel").textContent =
+          presets[currentPreset].name;
+        playAnalogSynth();
+      }
+
+      function playAnalogSynth() {
+        stopAnalogSynth();
+        try {
+          if (!audioCtx)
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const master = audioCtx.createGain();
+          master.gain.setValueAtTime(0.05, audioCtx.currentTime);
+          master.connect(audioCtx.destination);
+
+          presets[currentPreset].freqs.forEach((f) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+            osc.connect(master);
+            osc.start();
+            synthNodes.push(osc);
+          });
+          showToast("▶ PLAYING: " + presets[currentPreset].name);
+        } catch (e) {}
+      }
+
+      function stopAnalogSynth() {
+        synthNodes.forEach((n) => {
+          try {
+            n.stop();
+          } catch (e) {}
+        });
+        synthNodes = [];
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.display = "block";
+        setTimeout(() => {
+          t.style.display = "none";
+        }, 2400);
+      }
+
+      renderHUD();
+      renderQuests();
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () =>
+          navigator.serviceWorker.register("./sw.js"),
+        );
+      }
+    </script>
+  </body>
+</html>

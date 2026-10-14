@@ -1,0 +1,20 @@
+{
+  "id": "com.siralune.lifequest.sys1",
+  "name": "LIFEQUEST // SYS_V1.0",
+  "short_name": "LifeQuest",
+  "description": "Retro-futurist bone-white personal quest tracker and analog focus deck.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F2EB",
+  "theme_color": "#F5F2EB",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%23F5F2EB' stroke='%232B261E' stroke-width='32'/%3E%3Crect x='96' y='112' width='320' height='140' rx='24' fill='%23CBD5C0' stroke='%232B261E' stroke-width='20'/%3E%3Ctext x='256' y='208' font-family='monospace' font-size='96' font-weight='bold' fill='%231E2D1A' text-anchor='middle'%3ELVL3%3C/text%3E%3Crect x='96' y='300' width='320' height='100' rx='20' fill='%23E6D2AA' stroke='%232B261E' stroke-width='20'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
